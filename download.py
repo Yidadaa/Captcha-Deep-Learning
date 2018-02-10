@@ -87,4 +87,6 @@ def downloadAndSave(urls):
 
 if __name__ == '__main__':
     urls = getURLs()
+    if 'data' not in os.listdir('./'):
+        os.mkdir('./data')
     downloadAndSave(urls)
