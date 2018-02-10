@@ -87,4 +87,4 @@ def downloadAndSave(urls):
 
 if __name__ == '__main__':
     urls = getURLs()
-    downloadAndSave(urls[0:10])
+    downloadAndSave(urls)
