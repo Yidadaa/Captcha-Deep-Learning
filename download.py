@@ -38,15 +38,13 @@ def getURLs(filename = './captcha_urls.csv'):
 def downloadAndSave(urls):
     alreadyDownload = os.listdir('./data')
     total = len(urls)
-    index = len(alreadyDownload)
+    index = 0
     info = []
-    urls = urls[index:]
 
     for url in urls:
         index += 1
         label = re.match(r'.*\/(\d+)\*.*', url).groups()[0] # 提取标签
         name = re.match(r'.*\*(\S+)\.gif', url).groups()[0] # 提取文件名
-        imgData = request.urlopen(url).read()
 
         path = './data/' + name
         sourceImg = '/'.join(['.', 'data', name, name]) + '.gif'
@@ -54,6 +52,8 @@ def downloadAndSave(urls):
         # 断点续存
         if name not in alreadyDownload:
             os.mkdir(path)
+
+            imgData = request.urlopen(url).read()
 
             with open(sourceImg, 'wb') as f:
                 f.write(imgData)
