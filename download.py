@@ -38,8 +38,9 @@ def getURLs(filename = './captcha_urls.csv'):
 def downloadAndSave(urls):
     alreadyDownload = os.listdir('./data')
     total = len(urls)
-    index = 0
+    index = len(alreadyDownload)
     info = []
+    urls = urls[index:]
 
     for url in urls:
         index += 1
@@ -50,27 +51,28 @@ def downloadAndSave(urls):
         path = './data/' + name
         sourceImg = '/'.join(['.', 'data', name, name]) + '.gif'
 
+        # 断点续存
         if name not in alreadyDownload:
             os.mkdir(path)
 
-        with open(sourceImg, 'wb') as f:
-            f.write(imgData)
+            with open(sourceImg, 'wb') as f:
+                f.write(imgData)
 
-        gif = Image.open(io.BytesIO(imgData)) # 使用pil处理gif数据
-        i = 0
-        palette = gif.getpalette()
-        try:
-            while True:
-                gif.putpalette(palette)
-                newImg = Image.new('RGBA', gif.size)
-                newImg.paste(gif)
-                newImg.save(path + '/' + str(i) + '.png')
+            gif = Image.open(io.BytesIO(imgData)) # 使用pil处理gif数据
+            i = 0
+            palette = gif.getpalette()
+            try:
+                while True:
+                    gif.putpalette(palette)
+                    newImg = Image.new('RGBA', gif.size)
+                    newImg.paste(gif)
+                    newImg.save(path + '/' + str(i) + '.png')
 
-                i += 1
-                gif.seek(gif.tell() + 1)
-        
-        except EOFError:
-            pass
+                    i += 1
+                    gif.seek(gif.tell() + 1)
+            
+            except EOFError:
+                pass
 
         print('已处理/总数： %d/%d'%(index, total), end='\r')
         info.append({
