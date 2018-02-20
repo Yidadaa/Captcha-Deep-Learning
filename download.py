@@ -1,3 +1,6 @@
+#! python2
+# coding: utf-8
+
 """
 @file 用于下载数据集
 @author Yidadaa
@@ -8,7 +11,12 @@ import os
 import json
 import io
 from PIL import Image
-from urllib import request
+import sys
+
+if sys.version_info.major == 3:
+    from urllib import request
+elif sys.version_info.major == 2:
+    import urllib2 as request
 
 """
 获取数据集的URL集合
@@ -57,7 +65,7 @@ def downloadAndSave(urls):
 
         index.append([path, label]) # index.json 存放以[path, label]的形式存放了文件信息
 
-        print('已处理/总数： %d/%d'%(count, total), end='\r')
+        print(count, total)
 
     with open('./data/index.json', 'w') as f:
         f.write(json.dumps(index)) # 将索引数据保存到index.json
@@ -66,4 +74,4 @@ if __name__ == '__main__':
     urls = getURLs()
     if 'data' not in os.listdir('./'):
         os.mkdir('./data')
-    downloadAndSave(urls)
+    downloadAndSave(urls[0:5])
