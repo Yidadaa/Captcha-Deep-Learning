@@ -66,4 +66,4 @@ if __name__ == '__main__':
     urls = getURLs()
     if 'data' not in os.listdir('./'):
         os.mkdir('./data')
-    downloadAndSave(urls[0:5])
+    downloadAndSave(urls)
