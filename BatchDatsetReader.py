@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.misc as misc
+import json
 
 
 class BatchDatset:
@@ -11,7 +12,7 @@ class BatchDatset:
     train_label_list = []
     batch_offset = 0
     epochs_completed = 0
-
+    
     def __init__(self, image_options={}):
         """
         Intialize a generic file reader with batching for list of files
@@ -24,15 +25,12 @@ class BatchDatset:
         color=True/False
         """
         print("Initializing Batch Dataset Reader...")
-        train_file = open('train.txt','r')
-        train_label = open('train_label.txt','r')
+        with open('./data/index.json', 'r') as f:
+            source = np.array(json.loads(f.read()))
+        
+        self.train_list = source[:, 0]
+        self.train_label_list = source[:, 1]
 
-        for line in train_file:
-            line = line.strip()
-            self.train_list.append(line)
-        for line in train_label:
-            line = line.strip()
-            self.train_label_list.append(line)
         self.files = self.train_list
         self.annotations = self.train_label_list
         

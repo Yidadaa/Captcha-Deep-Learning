@@ -55,7 +55,7 @@ def downloadAndSave(urls):
             gif = Image.open(io.BytesIO(imgData)) # 使用pil处理gif数据
             gif.save(path)
 
-        index.append([path, label])
+        index.append([path, label]) # index.json 存放以[path, label]的形式存放了文件信息
 
         print('已处理/总数： %d/%d'%(count, total), end='\r')
 
