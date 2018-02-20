@@ -38,57 +38,32 @@ def getURLs(filename = './captcha_urls.csv'):
 def downloadAndSave(urls):
     alreadyDownload = os.listdir('./data')
     total = len(urls)
-    index = 0
-    info = []
+    count = 0 # 用于统计已处理图片
+    index = [] # 用于存放数据索引
 
     for url in urls:
-        index += 1
+        count += 1
         label = re.match(r'.*\/(\d+)\*.*', url).groups()[0] # 提取标签
         name = re.match(r'.*\*(\S+)\.gif', url).groups()[0] # 提取文件名
 
-        path = './data/' + name
-        sourceImg = '/'.join(['.', 'data', name, name]) + '.gif'
+        filename = name + '.png'
+        path =  './data/' + filename
 
         # 断点续存
-        if name not in alreadyDownload:
-            os.mkdir(path)
-
+        if filename not in alreadyDownload:
             imgData = request.urlopen(url).read()
-
-            with open(sourceImg, 'wb') as f:
-                f.write(imgData)
-
             gif = Image.open(io.BytesIO(imgData)) # 使用pil处理gif数据
-            i = 0
-            palette = gif.getpalette()
-            try:
-                while True:
-                    gif.putpalette(palette)
-                    newImg = Image.new('RGBA', gif.size)
-                    newImg.paste(gif)
-                    newImg.save(path + '/' + str(i) + '.png')
+            gif.save(path)
 
-                    i += 1
-                    gif.seek(gif.tell() + 1)
-            
-            except EOFError:
-                pass
+        index.append([path, label])
 
-        print('已处理/总数： %d/%d'%(index, total), end='\r')
-        info.append({
-            'name': name, # hash值
-            'label': label, # 标签
-            'path': path, # 图片路径
-            'sourceImg': sourceImg, # 原始图片
-            'frameFormat': 'png', # 帧图片格式
-            'frameCount': 20 # 一共多少帧
-        })
+        print('已处理/总数： %d/%d'%(count, total), end='\r')
 
-    with open('./data/info.json', 'w') as f:
-        f.write(json.dumps(info)) # 将索引数据保存到info.json
+    with open('./data/index.json', 'w') as f:
+        f.write(json.dumps(index)) # 将索引数据保存到index.json
 
 if __name__ == '__main__':
     urls = getURLs()
     if 'data' not in os.listdir('./'):
         os.mkdir('./data')
-    downloadAndSave(urls)
+    downloadAndSave(urls[0:5])
