@@ -12,6 +12,8 @@ class BatchDatset:
     train_label_list = []
     batch_offset = 0
     epochs_completed = 0
+    test_list = [] # 取5000条作为测试数据
+    test_label_list = []
     
     def __init__(self, image_options={}):
         """
@@ -28,11 +30,16 @@ class BatchDatset:
         with open('./data/index.json', 'r') as f:
             source = np.array(json.loads(f.read()))
         
-        self.train_list = source[:, 0]
-        self.train_label_list = source[:, 1]
+        image_list = source[:, 0]
+        label_list = source[:, 1]
 
-        self.files = self.train_list
-        self.annotations = self.train_label_list
+        count = len(image_list)
+
+        self.test_list = image_list[count - 5000:count]
+        self.test_label_list = label_list[count - 5000:count]
+
+        self.files = self.train_list = image_list[0:count - 5000]
+        self.annotations = self.train_label_list = label_list[0:count - 5000]
         
         self.image_options = image_options
         self._read_images()
