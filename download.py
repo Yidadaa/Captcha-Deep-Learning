@@ -49,27 +49,32 @@ def downloadAndSave(urls):
     count = 0 # 用于统计已处理图片
     index = [] # 用于存放数据索引
 
-    for url in urls:
-        count += 1
-        label = re.match(r'.*\/(\d+)\*.*', url).groups()[0] # 提取标签
-        name = re.match(r'.*\*(\S+)\.gif', url).groups()[0] # 提取文件名
+    try:
+        for url in urls:
+            count += 1
+            label = re.match(r'.*\/(\d+)\*.*', url).groups()[0] # 提取标签
+            name = re.match(r'.*\*(\S+)\.gif', url).groups()[0] # 提取文件名
 
-        filename = name + '.png'
-        path =  './data/' + filename
+            filename = name + '.png'
+            path =  './data/' + filename
 
-        # 断点续存
-        if filename not in alreadyDownload:
-            imgData = request.urlopen(url).read()
-            gif = Image.open(io.BytesIO(imgData)) # 使用pil处理gif数据
-            gif.save(path)
+            # 断点续存
+            if filename not in alreadyDownload:
+                try:
+                    imgData = request.urlopen(url, timeout=3).read()
+                except Exception:
+                    continue # 添加超时处理
+                gif = Image.open(io.BytesIO(imgData)) # 使用pil处理gif数据
+                gif.save(path)
 
-        index.append([path, label]) # index.json 存放以[path, label]的形式存放了文件信息
+            index.append([path, label]) # index.json 存放以[path, label]的形式存放了文件信息
 
-        print(count, total)
+            print(count, total)
+    finally:
+        with open('./data/index.json', 'w') as f:
+            f.write(json.dumps(index)) # 将索引数据保存到index.json
 
-    with open('./data/index.json', 'w') as f:
-        f.write(json.dumps(index)) # 将索引数据保存到index.json
-
+        print('Index file saved at ./data/index.json')
 if __name__ == '__main__':
     urls = getURLs()
     if 'data' not in os.listdir('./'):
