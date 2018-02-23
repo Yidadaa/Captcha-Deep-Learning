@@ -84,20 +84,13 @@ class Captcha:
                 metrics=['accuracy'])
 
     def train(self):
-        self.model.fit_generator(self.gen(128), steps_per_epoch=1000, epochs=5,
+        self.checkpoint_path = './model.h5'
+        self.model.fit_generator(self.gen(128), steps_per_epoch=1000, epochs=10,
             validation_data=self.gen(256), validation_steps=10)
         # 训练完成后，将模型保存起来
-        self.model.save_weights(self.checkpoint_path)
+        self.model.save(self.checkpoint_path)
         print('\nModel has been saved at %s'%self.checkpoint_path)
 
     def predict(self, X):
         self.model.predict(X)
-
-    def loads(self, checkpoint_path='./model.h5'):
-        if os.path.exists(self.checkpoint_path):
-            # 自动从上次训练数据中恢复
-            self.model.load_weights(self.checkpoint_path)
-            print('\nModel has been loaded from %s'%self.checkpoint_path)
-        else:
-            print('\nNo model to laod!')
 
