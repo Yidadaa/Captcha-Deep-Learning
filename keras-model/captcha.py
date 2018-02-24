@@ -5,6 +5,7 @@ from keras.utils.np_utils import to_categorical
 from keras.models import *
 from keras.layers import *
 from keras.callbacks import *
+from keras import optimizers
 from PIL import Image
 import numpy as np
 import json
@@ -22,7 +23,7 @@ def evaluate(y_true, y_pred):
     y_true_t = np.argmax(y_true, axis=2).T
     y_pred_t = np.argmax(y_pred, axis=2).T
     acc = np.mean(map(np.array_equal, y_pred_t, y_true_t))
-    print("\033[0;31mCurrent acc: %f%%\033[0m" % (acc * 100))
+    print("\n\n\033[0;31mCurrent acc: %f%%\033[0m\n\n" % (acc * 100))
     return acc
 
 class Evaluator(Callback):
@@ -73,7 +74,7 @@ class Dataset():
         self.test_label = labels[N - self.test_count:]
         print('\nData loading done! %d pcs train data and %d pcs test data loaded.\n'%(N, self.test_count))
 
-    def gen(self, batch_size=96, type='train'):
+    def gen(self, batch_size=128, type='train'):
         """读取图像数据并返回
 
         Args:
@@ -126,11 +127,13 @@ class Captcha:
             x = Convolution2D(32*2**i, (2, 2), activation='relu')(x)
             x = Convolution2D(32*2**i, (2, 2), activation='relu')(x)
             x = MaxPooling2D((2, 2))(x)
+            x = normalization.BatchNormalization(epsilon=1e-6)(x)
 
         x = Flatten()(x)
-        x = Dropout(0.25)(x)
+        x = Dropout(0.5)(x)
         x = [Dense(self.n_class, activation='softmax', name='c%d'%(i + 1))(x) for i in range(self.n_len)]
         self.model = Model(inputs=input_tensor, outputs=x)
+        adam = optimizers.Adam(lr=0.1)
         self.model.compile(loss='categorical_crossentropy',
                 optimizer='adadelta',
                 metrics=['accuracy'])
@@ -138,11 +141,13 @@ class Captcha:
     def train(self):
         self.checkpoint_path = './model.h5'
         custom_acc = Evaluator(self.dataset)
-        self.model.fit_generator(self.dataset.gen(128), steps_per_epoch=200, epochs=50,
-            validation_data=self.dataset.gen(256), validation_steps=10,
+        history = self.model.fit_generator(self.dataset.gen(128), steps_per_epoch=200, epochs=100,
+            validation_data=self.dataset.gen(256), validation_steps=1,
             callbacks=[custom_acc])
-        # 训练完成后，将模型保存起来
+        # save acc and model
         self.model.save(self.checkpoint_path)
+        with open('./acc.json', 'w') as f:
+            f.write(json.dumps(custom_acc.accs))
         print('History acc:', custom_acc.accs)
         print('\nModel has been saved at %s'%self.checkpoint_path)
 

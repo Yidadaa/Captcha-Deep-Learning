@@ -1,19 +1,22 @@
 from keras.models import load_model
 import os
-from captcha import Captcha
+from captcha import Captcha, evaluate, Dataset
 import numpy as np
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 model = load_model('model.h5')
-dataset = Captcha()
+dataset = Dataset()
+gen = dataset.gen(100)
 
-nums = 20
+nums = 1
 acc = 0.0
 for i in range(nums):
-    X_test, y_test = next(dataset.gen(1000))
+    X_test, y_test = next(gen)
     y_pred = model.predict(X_test)
-    pred = np.argmax(y_pred, axis=2).T
-    y_true = np.argmax(y_pred, axis=2).T
-    acc += np.mean(map(np.array_equal, pred, y_true))
+    y_t = np.argmax(y_test, axis=2).T
+    y_p = np.argmax(y_pred, axis=2).T
+    for j in range(10):
+        print(y_t[j], y_p[j])
+    acc += evaluate(y_test, y_pred)
 print(acc / nums)
