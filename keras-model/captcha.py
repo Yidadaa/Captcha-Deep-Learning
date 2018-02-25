@@ -6,6 +6,7 @@ from keras.models import *
 from keras.layers import *
 from keras.callbacks import *
 from keras import optimizers
+from keras import backend as K
 from PIL import Image
 import numpy as np
 import json
@@ -20,6 +21,8 @@ def evaluate(y_true, y_pred):
     Return:
         Acc(float): 准确率
     """
+    # y_true_t = np.argmax(y_true.reshape(y_true.shape[0], 5, 10), axis=2).T
+    # y_pred_t = np.argmax(y_pred.reshape(y_true.shape[0], 5, 10), axis=2).T
     y_true_t = np.argmax(y_true, axis=2).T
     y_pred_t = np.argmax(y_pred, axis=2).T
     acc = np.mean(map(np.array_equal, y_pred_t, y_true_t))
@@ -44,6 +47,10 @@ class Evaluator(Callback):
         y_pred = self.model.predict(X_test)
         acc = evaluate(y_test, y_pred)
         self.accs.append(acc)
+
+def sig_ce_loss(target, output):
+    return K.categorical_crossentropy(target, output, from_logits=True)
+
 
 class Dataset():
     """数据集读取类
@@ -85,7 +92,7 @@ class Dataset():
             X(Array): 训练数据
             y(List): 训练label
         """
-        width, height = 240, 60
+        width, height = 256, 64
         n_class, n_len = 10, 5 # 需要识别10个字符，5位数
 
         images = self.train_index if type == 'train' else self.test_index
@@ -103,18 +110,19 @@ class Dataset():
             for i in range(batch_size):
                 index = this_batch * batch_size + i
                 label_str = labels[index]
-                X[i] = np.array(Image.open(path_prefix + images[index].replace('./data/', ''))).reshape(height, width, 1)
+                X[i] = np.array(Image.open(path_prefix + images[index].replace('./data/', '')).resize((64, 256))).reshape(height, width, 1)
                 for j, c in enumerate(label_str):
                     y[j][i, :] = 0
                     y[j][i, int(c)] = 1
             this_batch = (this_batch + 1) % all_batch
 
             # print(this_batch, all_batch)
+            # yield X, np.array(y).reshape(batch_size, n_class * n_len)
             yield X, y
 
 class Captcha:
     def __init__(self):
-        self.width, self.height, self.n_len, self.n_class = 240, 60, 5, 10
+        self.width, self.height, self.n_len, self.n_class = 256, 64, 5, 10
         self.model = None
         self.dataset = Dataset()
         self.init_model()
@@ -124,17 +132,19 @@ class Captcha:
         input_tensor = Input((height, width, 1))
         x = input_tensor
         for i in range(4):
-            x = Convolution2D(32*2**i, (2, 2), activation='relu')(x)
-            x = Convolution2D(32*2**i, (2, 2), activation='relu')(x)
+            x = Convolution2D(32*2**i, (3, 3), activation='relu', padding='same')(x)
+            # x = Convolution2D(32*2**i, (2, 2), activation='relu')(x)
             x = MaxPooling2D((2, 2))(x)
-            x = normalization.BatchNormalization(epsilon=1e-6)(x)
+            if i < 2:
+                x = normalization.BatchNormalization(epsilon=1e-6)(x)
 
         x = Flatten()(x)
-        x = Dropout(0.5)(x)
+        # x = Dense(self.n_len * self.n_class, activation='softmax')(x)
+        # x = Reshape((self.n_len, self.n_class))(x)
         x = [Dense(self.n_class, activation='softmax', name='c%d'%(i + 1))(x) for i in range(self.n_len)]
         self.model = Model(inputs=input_tensor, outputs=x)
-        adam = optimizers.Adam(lr=0.1)
-        self.model.compile(loss='categorical_crossentropy',
+        sgd = optimizers.Adam(0.001)
+        self.model.compile(loss=sig_ce_loss,
                 optimizer='adadelta',
                 metrics=['accuracy'])
 
