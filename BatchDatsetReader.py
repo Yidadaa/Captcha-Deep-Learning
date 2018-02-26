@@ -6,7 +6,9 @@ import json
 class BatchDatset:
     files = []
     images = []
+    test_images = []
     annotations = []
+    test_annotations = []
     image_options = {}
     train_list = []
     train_label_list = []
@@ -36,7 +38,7 @@ class BatchDatset:
         count = len(image_list)
 
         self.test_list = image_list[count - 5000:count]
-        self.test_label_list = label_list[count - 5000:count]
+        self.test_annotations=self.test_label_list = label_list[count - 5000:count]
 
         self.files = self.train_list = image_list[0:count - 5000]
         self.annotations = self.train_label_list = label_list[0:count - 5000]
@@ -47,6 +49,7 @@ class BatchDatset:
     def _read_images(self):
         self.__channels = True
         self.images = np.array([self._transform(filename) for filename in self.files])
+        self.test_images = np.array([self._transform(filename) for filename in self.test_list])
         self.__channels = False
         print (self.images.shape)
 
@@ -87,6 +90,7 @@ class BatchDatset:
         indexes = np.random.randint(0, self.images.shape[0], size=[batch_size]).tolist()
         return self.images[indexes], self.annotations[indexes]
 
-    def get_val_batch(self,itr):
-        index = [itr]
-        return self.images[index], self.annotations[index]
+    def get_val_batch(self,itr,bs):
+        start = itr*bs
+        end = start + bs
+        return self.test_images[start:end], self.test_annotations[start:end]
