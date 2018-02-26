@@ -139,19 +139,20 @@ class Captcha:
                 x = normalization.BatchNormalization(epsilon=1e-6)(x)
 
         x = Flatten()(x)
+        x = Dropout(0.5)(x)
         # x = Dense(self.n_len * self.n_class, activation='softmax')(x)
         # x = Reshape((self.n_len, self.n_class))(x)
         x = [Dense(self.n_class, activation='softmax', name='c%d'%(i + 1))(x) for i in range(self.n_len)]
         self.model = Model(inputs=input_tensor, outputs=x)
         sgd = optimizers.Adam(0.001)
-        self.model.compile(loss=sig_ce_loss,
+        self.model.compile(loss='categorical_crossentropy',
                 optimizer='adadelta',
                 metrics=['accuracy'])
 
     def train(self):
         self.checkpoint_path = './model.h5'
         custom_acc = Evaluator(self.dataset)
-        history = self.model.fit_generator(self.dataset.gen(128), steps_per_epoch=200, epochs=100,
+        history = self.model.fit_generator(self.dataset.gen(128), steps_per_epoch=200, epochs=200,
             validation_data=self.dataset.gen(256), validation_steps=1,
             callbacks=[custom_acc])
         # save acc and model
