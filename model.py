@@ -21,8 +21,8 @@ class Captcha:
         # convolutional layers
         for i in range(4):
             dim = [1, 32, 64, 128]
-            w_c = tf.Variable(w_alpha*tf.random_normal([3, 3, dim[i], 32 * 2**i]))
-            b_c = tf.Variable(b_alpha*tf.random_normal([32 * 2**i]))
+            w_c = tf.Variable(w_alpha * tf.random_normal([3, 3, dim[i], 32 * 2**i]))
+            b_c = tf.Variable(b_alpha * tf.random_normal([32 * 2**i]))
             x = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(x, w_c, strides=[1, 1, 1, 1], padding='SAME'), b_c))
             x = tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
             x = tf.nn.dropout(x, keep_prob)
