@@ -116,7 +116,7 @@ with tf.Session() as sess:
 		text = train_annotations[0]
 		image = convert2gray(image)
 
-		image = image.flatten() / 255
+		image = (image.flatten()-128)/128
 
 		predict_text = crack_captcha(sess,image,predict)
 		if text == predict_text:

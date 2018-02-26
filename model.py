@@ -40,8 +40,12 @@ class Captcha:
         return out
 
 
-    def load_checkpoint(self):
-        tf.train.Saver().restore(self.sess, tf.train.latest_checkpoint('./checkpoint'))
+    def load_checkpoint(self, ckpt_name=None):
+        if ck_name is None:
+            ckpt = tf.train.latest_checkpoint('./checkpoint')
+        else:
+            ckpt = ckpt_name
+        tf.train.Saver().restore(self.sess, ckpt)
         print('Model restored from checkpoint.')
 
     def predict(self, image):
