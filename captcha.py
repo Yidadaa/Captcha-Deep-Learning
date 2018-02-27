@@ -103,9 +103,16 @@ acc_ = 0.0
 saver = tf.train.Saver()
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
-
+    index = 0
     for step in range(max_it):
         train_images, train_annotations = train_dataset_reader.next_batch(batch_size)
+
+        if step >= 9500:
+            if index ==77:
+                index = 0
+            train_images, train_annotations = train_dataset_reader.get_val_batch(index,batch_size)
+            index+=1
+
         #print(train_images)
         batch_x = np.zeros([batch_size, IMAGE_HEIGHT*IMAGE_WIDTH])
         batch_y = np.zeros([batch_size, MAX_CAPTCHA*CHAR_SET_LEN])

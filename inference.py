@@ -107,6 +107,8 @@ output = crack_captcha_cnn()
 saver = tf.train.Saver()
 predict = tf.argmax(tf.reshape(output, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2)
 a = 0.0
+k = 0.0
+file1 = open('results.txt','a')
 with tf.Session() as sess:
 	saver.restore(sess, tf.train.latest_checkpoint('./checkpoint'))
 	for itr in range(5000):
@@ -119,7 +121,11 @@ with tf.Session() as sess:
 		image = (image.flatten()-128)/128
 
 		predict_text = crack_captcha(sess,image,predict)
-		if text == predict_text:
+        file1.write(text+' '+predict_text+'\n')
+        if text == predict_text:
 			a+=1.0
-		print("正确: {}  预测: {}".format(text, predict_text))
-print(a/5000)
+        print("正确: {}  预测: {}".format(text, predict_text))
+        k+= 1
+print(a)
+print(k)
+print(a/k)
