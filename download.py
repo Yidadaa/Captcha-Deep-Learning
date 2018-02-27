@@ -23,7 +23,7 @@ elif sys.version_info.major == 2:
 @filename: URL集合文件
 @return: URL字符串集合
 """
-def getURLs(filename = './data-index/captcha_urls.csv'):
+def getURLs(filename='./data-index/captcha_urls.csv'):
     content = []
     urls = []
     reg = r'^http.*\.gif'
@@ -43,7 +43,7 @@ def getURLs(filename = './data-index/captcha_urls.csv'):
 @urls: list
 @return: None
 """
-def downloadAndSave(urls):
+def downloadAndSave(urls, index_name='index'):
     alreadyDownload = os.listdir('./data')
     total = len(urls)
     count = 0 # 用于统计已处理图片
@@ -71,7 +71,7 @@ def downloadAndSave(urls):
 
             print(count, total)
     finally:
-        with open('./data/index.json', 'w') as f:
+        with open('./data/{}.json'.format(index_name), 'w') as f:
             f.write(json.dumps(index)) # 将索引数据保存到index.json
 
         print('Index file saved at ./data/index.json')
@@ -79,4 +79,4 @@ if __name__ == '__main__':
     urls = getURLs('./data-index/captcha_test.csv')
     if 'data' not in os.listdir('./'):
         os.mkdir('./data')
-    downloadAndSave(urls)
+    downloadAndSave(urls, index_name='test')

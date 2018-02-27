@@ -6,7 +6,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 model = Captcha()
 model.load_checkpoint()
 
-dataset = dataset.BatchDatset()
+dataset = dataset.BatchDatset(index_file='test')
 images, labels = dataset.get_val_batch(0, 100)
 image = images[0]
 label = labels[0]

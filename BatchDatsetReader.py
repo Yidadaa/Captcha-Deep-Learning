@@ -14,10 +14,10 @@ class BatchDatset:
     train_label_list = []
     batch_offset = 0
     epochs_completed = 0
-    test_list = [] # 5000 test data
+    test_list = [] #  test data
     test_label_list = []
 
-    def __init__(self, image_options={}):
+    def __init__(self, image_options={}, index_file='index', test_size=5000):
         """
         Intialize a generic file reader with batching for list of files
         :param records_list: list of file records to read -
@@ -29,7 +29,7 @@ class BatchDatset:
         color=True/False
         """
         print("Initializing Batch Dataset Reader...")
-        with open('./data/index.json', 'r') as f:
+        with open('./data/{}.json'.format(index_file), 'r') as f:
             source = np.array(json.loads(f.read()))
 
         image_list = source[:, 0]
@@ -37,11 +37,11 @@ class BatchDatset:
 
         count = len(image_list)
 
-        self.test_list = image_list[count - 5000:count]
-        self.test_annotations=self.test_label_list = label_list[count - 5000:count]
+        self.test_list = image_list[count - test_size:count]
+        self.test_annotations=self.test_label_list = label_list[count - test_size:count]
 
-        self.files = self.train_list = image_list[0:count - 5000]
-        self.annotations = self.train_label_list = label_list[0:count - 5000]
+        self.files = self.train_list = image_list[0:count - test_size]
+        self.annotations = self.train_label_list = label_list[0:count - test_size]
 
         self.image_options = image_options
         self._read_images()
