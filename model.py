@@ -12,6 +12,7 @@ class Captcha:
         self.X = tf.placeholder(tf.float32, [None, self.WIDTH * self.HEIGHT])
         self.keep_prob = tf.placeholder(tf.float32)
         self.output = self.cnn_graph()
+        self.predict_holder = tf.argmax(tf.reshape(self.output, [-1, self.MAX_CAPTCHA, self.CHAR_SET_LEN]), 2)
 
     def cnn_graph(self, w_alpha=0.01, b_alpha=0.1):
         X = self.X
@@ -41,10 +42,10 @@ class Captcha:
 
 
     def load_checkpoint(self, ckpt_name=None):
-        if ck_name is None:
+        if ckpt_name is None:
             ckpt = tf.train.latest_checkpoint('./checkpoint')
         else:
-            ckpt = ckpt_name
+            ckpt = './checkpoint/' + ckpt_name
         tf.train.Saver().restore(self.sess, ckpt)
         print('Model restored from checkpoint.')
 
@@ -52,8 +53,6 @@ class Captcha:
         if len(image.shape) > 2:
             image = np.mean(image, -1)
         image = (image.flatten() - 128) / 128
-
-        predict = tf.argmax(tf.reshape(self.output, [-1, self.MAX_CAPTCHA, self.CHAR_SET_LEN]), 2)
-        text = self.sess.run(predict, feed_dict={ self.X: [image], self.keep_prob: 1 })
+        text = self.sess.run(self.predict_holder, feed_dict={ self.X: [image], self.keep_prob: 1 })
         text = text[0].tolist()
         return text
