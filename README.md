@@ -1,15 +1,20 @@
-## 验证码识别
-> Python 3.x + PIL
+## Recognize Captcha Images
+> Python 2.x + PIL + tensorflow
 
-### 使用
+### Usage
 ```bash
-# 下载数据集
+# 1. download dataset
 python download.py
+
+# 2. start training
+python captcha.py
+
+# 3. evaluate your model
+python test.py
 ```
 
-### 提交代码
+### Encounter a Problem?
+Submit an issue [here](https://github.com/Yidadaa/Captcha-Deep-Learning/issues).
 
-1. fork该项目；
-2. 克隆到本地：`git@github.com:Yidadaa/Captcha-Deep-Learning.git`；
-3. 添加代码并提交；
-4. 提交Pull Request。
+### Contributors
+@Yidadaa @YCJGG
