@@ -1,18 +1,34 @@
 import BatchDatsetReader as dataset
 import os
+import time
 from model import Captcha
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 model = Captcha()
-model.load_checkpoint()
+#model.load_checkpoint('crack_capcha0.990800004005.model-9200')
+model.load_checkpoint('crack_capcha0.994400002956.model-9960')
 
-dataset = dataset.BatchDatset(index_file='test')
-images, labels = dataset.get_val_batch(0, 100)
-image = images[0]
-label = labels[0]
-
-for i in range(10):
+dataset = dataset.BatchDatset(ratio=0.01, test_size=1000)
+images, labels = dataset.get_val_batch(0, 1000)
+correct = 0
+start = time.time()
+t = start
+for i in range(len(labels)):
     image = images[i]
     label = labels[i]
     pred = model.predict(image)
-    print(label, pred)
+    text = ''.join(map(str, pred))
+    if text == label:
+        correct += 1
+    else:
+        print(label, text)
+        pass
+    if i % 50 == 0:
+        t = time.time() - t
+        print('[%d/%d] average: %f'%(i, len(labels), t / 50))
+        t = time.time()
+
+end = time.time()
+
+print('Total time: %f s'%(end - start))
+print('Average time: %f s'%((end - start) / len(labels)))
+print('Total: %d, Correct: %d, Acc: %f'%(len(labels), correct, float(correct) / float(len(labels))))

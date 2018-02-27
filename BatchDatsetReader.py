@@ -9,7 +9,6 @@ class BatchDatset:
     test_images = []
     annotations = []
     test_annotations = []
-    image_options = {}
     train_list = []
     train_label_list = []
     batch_offset = 0
@@ -17,18 +16,15 @@ class BatchDatset:
     test_list = [] #  test data
     test_label_list = []
 
-    def __init__(self, image_options={}, index_file='index', test_size=5000):
+    def __init__(self, index_file='index', ratio=1.0,  test_size=5000):
         """
-        Intialize a generic file reader with batching for list of files
-        :param records_list: list of file records to read -
-        sample record: {'image': f, 'annotation': annotation_file, 'filename': filename}
-        :param image_options: A dictionary of options for modifying the output image
-        Available options:
-        resize = True/ False
-        resize_size = #size of output image - does bilinear resize
-        color=True/False
+        Args:
+            index_file(string): the name of index file. eg: 'index.json' -> 'index'
+            ratio(float): ratio of loading data
+            test_size(int): size of test data
         """
         print("Initializing Batch Dataset Reader...")
+
         with open('./data/{}.json'.format(index_file), 'r') as f:
             source = np.array(json.loads(f.read()))
 
@@ -36,15 +32,22 @@ class BatchDatset:
         label_list = source[:, 1]
 
         count = len(image_list)
+        to_be_loaded = int(count * ratio)
+        image_list = image_list[0:to_be_loaded]
+        label_list = label_list[0:to_be_loaded]
 
-        self.test_list = image_list[count - test_size:count]
-        self.test_annotations=self.test_label_list = label_list[count - test_size:count]
+        if test_size > to_be_loaded:
+            test_size = int(to_be_loaded * 0.2)
 
-        self.files = self.train_list = image_list[0:count - test_size]
-        self.annotations = self.train_label_list = label_list[0:count - test_size]
+        self.test_list = image_list[to_be_loaded - test_size:to_be_loaded]
+        self.test_annotations=self.test_label_list = label_list[to_be_loaded - test_size:to_be_loaded]
 
-        self.image_options = image_options
+        self.files = self.train_list = image_list[0:to_be_loaded - test_size]
+        self.annotations = self.train_label_list = label_list[0:to_be_loaded - test_size]
+
         self._read_images()
+
+        print('Total: %d, Loaded: %d, Test: %d\n'%(count, to_be_loaded, test_size))
 
     def _read_images(self):
         self.__channels = True
