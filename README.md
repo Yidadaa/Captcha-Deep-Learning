@@ -3,13 +3,16 @@
 
 ### Usage
 ```bash
-# 1. download dataset
+# 0. Install dependencies
+pip install -r requirements.txt
+
+# 1. Download dataset
 python download.py
 
-# 2. start training
+# 2. Start training your model
 python captcha.py
 
-# 3. evaluate your model
+# 3. Evaluate your model
 python test.py
 ```
 
@@ -17,4 +20,5 @@ python test.py
 Submit an issue [here](https://github.com/Yidadaa/Captcha-Deep-Learning/issues).
 
 ### Contributors
-@Yidadaa @YCJGG
+[@Yidadaa](https://github.com/Yidadaa)
+[@YCJGG](https://github.com/YCJGG)
