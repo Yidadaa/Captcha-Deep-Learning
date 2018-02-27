@@ -23,7 +23,7 @@ elif sys.version_info.major == 2:
 @filename: URL集合文件
 @return: URL字符串集合
 """
-def getURLs(filename = './captcha_urls.csv'):
+def getURLs(filename = './data-index/captcha_urls.csv'):
     content = []
     urls = []
     reg = r'^http.*\.gif'
@@ -76,7 +76,7 @@ def downloadAndSave(urls):
 
         print('Index file saved at ./data/index.json')
 if __name__ == '__main__':
-    urls = getURLs()
+    urls = getURLs('./data-index/captcha_test.csv')
     if 'data' not in os.listdir('./'):
         os.mkdir('./data')
     downloadAndSave(urls)
