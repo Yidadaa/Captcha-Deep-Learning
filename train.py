@@ -1,4 +1,4 @@
-import BatchDatsetReader as dataset
+import BatchReader as dataset
 
 import tensorflow as tf
 import numpy as np
@@ -11,7 +11,7 @@ CHAR_SET_LEN = 10
 batch_size = 64
 file = open('acc.txt','a')
 
-train_dataset_reader = dataset.BatchDatset()
+train_dataset_reader = dataset.BatchReader(index_file='index')
 X = tf.placeholder(tf.float32, [None, IMAGE_HEIGHT*IMAGE_WIDTH])
 Y = tf.placeholder(tf.float32, [None, MAX_CAPTCHA*CHAR_SET_LEN])
 keep_prob = tf.placeholder(tf.float32) # dropout

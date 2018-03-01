@@ -10,7 +10,7 @@ pip install -r requirements.txt
 python download.py
 
 # 2. Start training your model
-python captcha.py
+python train.py
 
 # 3. Evaluate your model
 python test.py
@@ -18,6 +18,7 @@ python test.py
 
 ### Encounter a Problem?
 Submit an issue [here](https://github.com/Yidadaa/Captcha-Deep-Learning/issues).
+Or read this [instructions](./docs/instructions.md)
 
 ### Contributors
 [@Yidadaa](https://github.com/Yidadaa)

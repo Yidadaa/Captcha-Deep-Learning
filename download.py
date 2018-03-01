@@ -18,12 +18,15 @@ if sys.version_info.major == 3:
 elif sys.version_info.major == 2:
     import urllib2 as request
 
-"""
-获取数据集的URL集合
-@filename: URL集合文件
-@return: URL字符串集合
-"""
 def getURLs(filename='./data-index/captcha_urls.csv'):
+    """
+    获取数据集的URL集合
+
+    Args:
+        @filename: URL集合文件的路径
+    
+    Return: URL字符串集合
+    """
     content = []
     urls = []
     reg = r'^http.*\.gif'
@@ -38,12 +41,15 @@ def getURLs(filename='./data-index/captcha_urls.csv'):
 
     return urls
 
-"""
-下载并保存爬取的数据
-@urls: list
-@return: None
-"""
 def downloadAndSave(urls, index_name='index'):
+    """
+    下载并保存爬取的数据
+    
+    Args:
+        @urls(list): url集合
+        @index_name(string): data目录下json索引文件的名称
+            比如要想保存到data.json中，就传入'data'，默认是'index'
+    """
     alreadyDownload = os.listdir('./data')
     total = len(urls)
     count = 0 # 用于统计已处理图片
@@ -67,16 +73,20 @@ def downloadAndSave(urls, index_name='index'):
                 gif = Image.open(io.BytesIO(imgData)) # 使用pil处理gif数据
                 gif.save(path)
 
-            index.append([path, label]) # index.json 存放以[path, label]的形式存放了文件信息
+            index.append([path, label]) # 存放以[path, label]的形式的文件信息
 
             print(count, total)
     finally:
         with open('./data/{}.json'.format(index_name), 'w') as f:
-            f.write(json.dumps(index)) # 将索引数据保存到index.json
+            f.write(json.dumps(index)) # 将索引数据保存到{index_name}.json
 
-        print('Index file saved at ./data/index.json')
+        print('Index file saved at ./data/{}.json'.format(index_name))
+
 if __name__ == '__main__':
+    # 首先会从csv文件中读取url集合
     urls = getURLs('./data-index/captcha_test.csv')
+    # 然后判断当前目录是否有data目录，若没有，则先创建data目录
     if 'data' not in os.listdir('./'):
         os.mkdir('./data')
+    # 下载数据，并将图片以及标签信息保存到{index_name}.json中
     downloadAndSave(urls, index_name='test')

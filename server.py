@@ -2,16 +2,16 @@
 # encoding: utf-8
 
 from flask import Flask, request, Response
-import numpy as np
-import scipy.misc as misc
-
-from model import Captcha
-
-import io
 import json
-
 from gevent import monkey
 from gevent.pywsgi import WSGIServer
+
+import numpy as np
+import scipy.misc as misc
+import io
+
+from CaptchaModel import Captcha
+
 # support async
 monkey.patch_all()
 

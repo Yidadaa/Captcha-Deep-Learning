@@ -1,14 +1,14 @@
-import BatchDatsetReader as dataset
+import BatchReader as dataset
 import os
 import time
-from model import Captcha
+from CaptchaModel import Captcha
 
 # load model
 model = Captcha()
 model.load_checkpoint('crack_capcha0.994400002956.model-9960')
 
 # load dataset
-dataset = dataset.BatchDatset(ratio=0.01, test_size=1000)
+dataset = dataset.BatchReader(ratio=0.01, test_size=1000)
 images, labels = dataset.get_val_batch(0, 1000)
 
 count = len(labels)

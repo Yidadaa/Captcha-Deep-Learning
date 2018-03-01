@@ -1,3 +1,6 @@
+#! python2
+# coding: utf-8
+
 import tensorflow as tf
 import numpy as np
 
@@ -42,6 +45,13 @@ class Captcha:
 
 
     def load_checkpoint(self, ckpt_name=None):
+        """
+        从存档点恢复模型参数
+
+        Args:
+            ckpt_name: 存档文件的名称，不包括后缀名
+                如果不传入，则直接从checkpooint目录中读取最近一次训练的模型
+        """
         if ckpt_name is None:
             ckpt = tf.train.latest_checkpoint('./checkpoint')
         else:
@@ -50,6 +60,12 @@ class Captcha:
         print('Model restored from checkpoint.')
 
     def predict(self, image):
+        """
+        识别验证码中的数字
+
+        Args:
+            image(np.array): 以矩阵形式存储的图片数据
+        """
         if len(image.shape) > 2:
             image = np.mean(image, -1)
         image = (image.flatten() - 128) / 128
