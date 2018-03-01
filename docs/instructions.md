@@ -17,6 +17,7 @@ crack_capcha0.994400002956.model-9960.data-00000-of-00001
 crack_capcha0.994400002956.model-9960.index
 crack_capcha0.994400002956.model-9960.meta
 ```
+如果没有，可以此获取训练好的模型：https://share.weiyun.com/dc274127a99be258aea284646b7faed1 下载后将里面的三个文件解压到`checkpoint`目录即可。
 
 然后，对图片进行预处理，然后调用模型进行破解：
 ```python
