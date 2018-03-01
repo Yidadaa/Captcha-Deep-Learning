@@ -1,5 +1,5 @@
 ## Recognize Captcha Images
-> Python 2.x + PIL + tensorflow
+> Python 2.x + PIL + keras 2.x
 
 ### Usage
 ```bash
@@ -10,10 +10,10 @@ pip install -r requirements.txt
 python download.py
 
 # 2. Start training your model
-python captcha.py
+python ./keras-model/run.py
 
 # 3. Evaluate your model
-python test.py
+python ./keras-model/evaluate.py
 ```
 
 ### Encounter a Problem?
@@ -21,4 +21,3 @@ Submit an issue [here](https://github.com/Yidadaa/Captcha-Deep-Learning/issues).
 
 ### Contributors
 [@Yidadaa](https://github.com/Yidadaa)
-[@YCJGG](https://github.com/YCJGG)
