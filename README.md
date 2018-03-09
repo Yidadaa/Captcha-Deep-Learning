@@ -18,6 +18,7 @@ python test.py
 
 ### Encounter a Problem?
 Submit an issue [here](https://github.com/Yidadaa/Captcha-Deep-Learning/issues).
+Or read this [instructions](./docs/instructions.md)
 
 ### Contributors
 [@Yidadaa](https://github.com/Yidadaa)
